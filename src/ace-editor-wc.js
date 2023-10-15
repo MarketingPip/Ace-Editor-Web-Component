@@ -22,14 +22,15 @@ class AceEditorWC extends HTMLElement {
   
   
   setAceEditorTitle(value){
-    const editorTextElement = this.querySelector('#code_editor_text_value');
+    const editorTextElement = this.querySelector('.ace-editor-wc-title');
       if (editorTextElement) {
-         this.editor.setShowPrintMargin(false);
-         this.editor.setValue(value)
-         this.editor.clearSelection();
+        editorTextElement.innerHTML = value
       }
   }
   
+  aceEditor(){
+    return this.editor
+  }
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'editor-value' && newValue !== oldValue) {
       this.setAceEditorValue(newValue)
@@ -43,7 +44,7 @@ class AceEditorWC extends HTMLElement {
 
   // Define the 'editor-value' attribute for tracking changes
   static get observedAttributes() {
-    return ['editor-value'];
+    return ['editor-value', 'editor-title'];
   }
 
   // ... Other methods ...
@@ -331,5 +332,5 @@ window.customElements.define('ace-editor', AceEditorWC);
 let btn = document.getElementById("btn");
 btn.addEventListener("click", (event) => {
   document.querySelector("#test").setAceEditorValue("print('hello world bitches')")
-   document.querySelector("#test2").setAttribute('editor-value', "print('hello world')")
+   console.log(document.querySelector("#test2").aceEditor().setValue("testss"))
 });
