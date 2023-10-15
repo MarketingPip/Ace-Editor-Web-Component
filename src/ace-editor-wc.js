@@ -6,9 +6,56 @@
 let AceEditorWC_Is_AceEditorLoaded = false;
 
 class AceEditorWC extends HTMLElement {
+
+
+    // Implement attributeChangedCallback to handle changes to 'editor-value' attribute
+  
+  
+  setAceEditorValue(value){
+    const editorTextElement = this.querySelector('#code_editor_text_value');
+      if (editorTextElement) {
+         this.editor.setShowPrintMargin(false);
+         this.editor.setValue(value)
+         this.editor.clearSelection();
+      }
+  }
+  
+  
+  setAceEditorTitle(value){
+    const editorTextElement = this.querySelector('#code_editor_text_value');
+      if (editorTextElement) {
+         this.editor.setShowPrintMargin(false);
+         this.editor.setValue(value)
+         this.editor.clearSelection();
+      }
+  }
+  
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'editor-value' && newValue !== oldValue) {
+      this.setAceEditorValue(newValue)
+    }
+    
+     if (name === 'editor-title' && newValue !== oldValue) {
+      this.setAceEditorTitle(newValue)
+    }
+    
+  }
+
+  // Define the 'editor-value' attribute for tracking changes
+  static get observedAttributes() {
+    return ['editor-value'];
+  }
+
+  // ... Other methods ...
+
   connectedCallback() {
 
-
+let AceEditorValue =  this
+function setAceEditor(editor){
+  
+ AceEditorValue['editor'] = editor
+}
+    
     // will be used to set language type for Ace Editor
     const language = this.getAttribute('language');
 
@@ -44,7 +91,7 @@ class AceEditorWC extends HTMLElement {
   <div class="ace-editor-wc-mask">Copied to the clipboard.</div>
 <div class="ace-editor-wc-ctrl">
 <button class="ck-button"><img src="https://lyricat.github.io/code-knack/demo/lib/code-knack/images/icon-copy-dark.svg"><span>copy</span></button></div>
-</div><div id="code_editor_text_value" class="ace-editor-wc-text">${this.innerHTML}</div>
+</div><div id="code_editor_text_value" class="ace-editor-wc-text">${this.getAttribute("editor-value") || this.innerHTML}</div>
       </div>
       </div>
       
@@ -63,7 +110,7 @@ class AceEditorWC extends HTMLElement {
       let isAceLoaded = await loadAceEditor()
 
       if (isAceLoaded.loaded === "true") {
-        CreateAceEditor(element, element.getAttribute("language").toLowerCase()) //
+        CreateAceEditor(element, element.getAttribute("language").toLowerCase(),  setAceEditor) //
       }
 
     }
@@ -184,7 +231,7 @@ async function loadAceEditor() {
 
 /// function to create Ace Editors for AceEditorWC-WC
 
-function CreateAceEditor(html_element, language) {
+function CreateAceEditor(html_element, language,   setAceEditor) {
 
   // url to load Ace Editor + resources
   ace.config.set("basePath", this.Ace_Editor_Path);
@@ -194,6 +241,8 @@ function CreateAceEditor(html_element, language) {
 
   const editor = ace.edit(html_element.querySelector("#code_editor_text_value"));
 
+ setAceEditor(editor) 
+  
   editor.$blockScrolling = Infinity;
 
   if (!html_element.getAttribute("editor-theme")) {
@@ -242,7 +291,7 @@ function CreateAceEditor(html_element, language) {
 
   editor.setValue(text_value);
 
-
+ 
 
   editor.clearSelection();
   /// This will set editor to content length
@@ -267,10 +316,20 @@ function CreateAceEditor(html_element, language) {
     editor.setOptions({
       maxLines: MaxLines
     });
-
+   
   }
 
-
+  
 }
 
+
+
+
+
 window.customElements.define('ace-editor', AceEditorWC);
+
+let btn = document.getElementById("btn");
+btn.addEventListener("click", (event) => {
+  document.querySelector("#test").setAceEditorValue("print('hello world bitches')")
+   document.querySelector("#test2").setAttribute('editor-value', "print('hello world')")
+});
