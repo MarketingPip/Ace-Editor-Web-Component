@@ -57,6 +57,10 @@ function setAceEditor(editor){
  AceEditorValue['editor'] = editor
 }
     
+    
+    
+   
+    
     // will be used to set language type for Ace Editor
     const language = this.getAttribute('language');
 
@@ -81,7 +85,7 @@ function setAceEditor(editor){
     if (this.getAttribute("editor-title")) {
       this.editorTitle = this.getAttribute("editor-title")
     }
-
+console.log(this.getAttribute("editor-value"))
     this.innerHTML = ` 
     
     <!--compress-->
@@ -229,6 +233,11 @@ async function loadAceEditor() {
 
 
 
+ function decodeHTML (html) {
+	let txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+}
 
 /// function to create Ace Editors for AceEditorWC-WC
 
@@ -332,5 +341,5 @@ window.customElements.define('ace-editor', AceEditorWC);
 let btn = document.getElementById("btn");
 btn.addEventListener("click", (event) => {
   document.querySelector("#test").setAceEditorValue("print('hello world bitches')")
-   console.log(document.querySelector("#test2").aceEditor().setValue("testss"))
+   console.log(document.querySelector("#test2").aceEditor().setValue(`<p>hello world</p>`))
 });
