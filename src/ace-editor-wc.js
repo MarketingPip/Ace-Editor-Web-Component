@@ -14,9 +14,9 @@ class AceEditorWC extends HTMLElement {
   setAceEditorValue(value){
     const editorTextElement = this.querySelector('#code_editor_text_value');
       if (editorTextElement) {
-         this.editor.setShowPrintMargin(false);
-         this.editor.setValue(value)
-         this.editor.clearSelection();
+         this.aceEditor.setShowPrintMargin(false);
+         this.aceEditor.setValue(value)
+         this.aceEditor.clearSelection();
       }
   }
   
@@ -31,6 +31,11 @@ class AceEditorWC extends HTMLElement {
   aceEditor(){
     return this.editor
   }
+  
+  dispose(){
+    this.dispose()
+  }
+  
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'editor-value' && newValue !== oldValue) {
       this.setAceEditorValue(newValue)
@@ -54,7 +59,7 @@ class AceEditorWC extends HTMLElement {
 let AceEditorValue =  this
 function setAceEditor(editor){
   
- AceEditorValue['editor'] = editor
+ AceEditorValue['aceEditor'] = editor
 }
     
     
@@ -64,23 +69,12 @@ function setAceEditor(editor){
     // will be used to set language type for Ace Editor
     const language = this.getAttribute('language');
 
-    if (!language) {
-      return this.innerHTML = `<!--compress-->  <div  class="ace-editor-component">
   
-<div class="ace-editor-wc "><div class="ace-editor-wc-pane"><div class="ace-editor-wc-title">Error!</div>
-  
-</div><div id="code_editor_text_value" class="ace-editor-wc-text" style="/* display: none; */">Error: Language Attribute Is Missing For Web Component ...
-        </div>
-        
-      </div>
-      <!--endcompress-->
-      `
-    }
 
     // disable spellcheck
     this.spellcheck = false;
 
-    this.editorTitle = language
+    this.editorTitle = language || "Text"
 
     if (this.getAttribute("editor-title")) {
       this.editorTitle = this.getAttribute("editor-title")
@@ -115,17 +109,30 @@ console.log(this.getAttribute("editor-value"))
       let isAceLoaded = await loadAceEditor()
 
       if (isAceLoaded.loaded === "true") {
-        CreateAceEditor(element, element.getAttribute("language").toLowerCase(),  setAceEditor) //
+        CreateAceEditor(element, element.getAttribute("language")?.toLowerCase() || "text",  setAceEditor) //
       }
 
     }
     CreateAceEditorForAceEditorWC(this)
 
+ 
 
     // Handle Copy Button Clicks   
     this.querySelector('.ck-button').addEventListener('click', (e) => handleCopyBtnClick(this));
+ 
+    function dispose(){
+          this.aceEditor.destroy()
+    
+ this.querySelector('.ck-button').removeEventListener('click', handleCopyBtnClick);
+      this.remove()
+      console.log('called')
+    }
+  
+    
+    this['dispose'] = dispose
 
-    function handleCopyBtnClick(html_element) {
+    
+ function handleCopyBtnClick(html_element) {
 
 
       const editor = ace.edit(html_element.querySelector("#code_editor_text_value"))
@@ -313,9 +320,18 @@ function CreateAceEditor(html_element, language,   setAceEditor) {
 
   // allow custom editor options to be set
   if (html_element.getAttribute("editor-options")) {
-    editor.setOptions(JSON.parse(html_element.getAttribute("editor-options")))
+   try{ editor.setOptions(JSON.parse(html_element.getAttribute("editor-options")))
+      }catch(err){
+        console.error(`Failed to parse editor-options for Ace-Editor: ${err?.message || err}`)
+         registerDefaultOptions()
+      }
   } else {
 
+    registerDefaultOptions()
+  }
+
+  
+  function registerDefaultOptions(){
     let MaxLines = Infinity
 
     // allow max-lines to be set...
@@ -328,7 +344,6 @@ function CreateAceEditor(html_element, language,   setAceEditor) {
     });
    
   }
-
   
 }
 
@@ -341,5 +356,5 @@ window.customElements.define('ace-editor', AceEditorWC);
 let btn = document.getElementById("btn");
 btn.addEventListener("click", (event) => {
   document.querySelector("#test").setAceEditorValue("print('hello world bitches')")
-   console.log(document.querySelector("#test2").aceEditor().setValue(`<p>hello world</p>`))
+   console.log(document.querySelector("#test").dispose())
 });
