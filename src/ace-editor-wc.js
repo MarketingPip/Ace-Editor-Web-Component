@@ -10,7 +10,7 @@ class AceEditorWC extends HTMLElement {
 
     // Implement attributeChangedCallback to handle changes to 'editor-value' attribute
   
-  
+    //
   setAceEditorValue(value){
     const editorTextElement = this.querySelector('#code_editor_text_value');
       if (editorTextElement) {
@@ -20,6 +20,7 @@ class AceEditorWC extends HTMLElement {
       }
   }
   
+ 
   
   setAceEditorTitle(value){
     const editorTextElement = this.querySelector('.ace-editor-wc-title');
@@ -32,9 +33,7 @@ class AceEditorWC extends HTMLElement {
     return this.editor
   }
   
-  dispose(){
-    this.dispose()
-  }
+ 
   
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'editor-value' && newValue !== oldValue) {
@@ -55,7 +54,7 @@ class AceEditorWC extends HTMLElement {
   // ... Other methods ...
 
   connectedCallback() {
-
+let rendered;
 let AceEditorValue =  this
 function setAceEditor(editor){
   
@@ -67,10 +66,14 @@ function setAceEditor(editor){
    
     
     // will be used to set language type for Ace Editor
-    const language = this.getAttribute('language');
+    let language = this.getAttribute('language');
 
-  
-
+    function setMode(Mode){
+language = Mode;
+this.setAttribute('language', Mode);
+     this.aceEditor.getSession().setMode(`ace/mode/${language}`)
+    }
+    this.setMode = setMode
     // disable spellcheck
     this.spellcheck = false;
 
@@ -111,6 +114,10 @@ console.log(this.getAttribute("editor-value"))
       if (isAceLoaded.loaded === "true") {
         CreateAceEditor(element, element.getAttribute("language")?.toLowerCase() || "text",  setAceEditor) //
       }
+      console.log()
+       if (isAceLoaded.loaded === "false") {
+        element.querySelector("#code_editor_text_value").innerHTML = "<p>Error: Failed to load component.</p>"
+      }
 
     }
     CreateAceEditorForAceEditorWC(this)
@@ -150,7 +157,7 @@ console.log(this.getAttribute("editor-value"))
 
   }
 }
-
+//
 
 this.Ace_Editor_Path = `https://cdnjs.cloudflare.com/ajax/libs/ace/1.16.0/`
 
@@ -180,7 +187,7 @@ function loadAceEditorScripts(info) {
     document.body.appendChild(gfgData);
   });
 };
-this.gfgScript = [`${this.Ace_Editor_Path}ace.min.js`, `${this.Ace_Editor_Path}ext-modelist.js`, `${this.Ace_Editor_Path}ext-themelist.js`, 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.16.0/ext-error_marker.min.js']
+this.gfgScript = [`${this.Ace_Editor_Path}ace.min.js`, `${this.Ace_Editor_Path}ext-modelist.js`, `${this.Ace_Editor_Path}ext-themelist.js`, 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.16.0/ext-error_marker.min.djs']
 
 if (typeof AceEditor_WC_Ace_Editor_EXTS != "undefined") {
   for (let item in AceEditor_WC_Ace_Editor_EXTS) {
@@ -285,6 +292,7 @@ function CreateAceEditor(html_element, language,   setAceEditor) {
       editor.setTheme("ace/theme/monokai");
 
     }
+     rendered = true
   }
 
   if (language) {
@@ -344,7 +352,7 @@ function CreateAceEditor(html_element, language,   setAceEditor) {
     });
    
   }
-  
+ 
 }
 
 
@@ -352,9 +360,7 @@ function CreateAceEditor(html_element, language,   setAceEditor) {
 
 
 window.customElements.define('ace-editor', AceEditorWC);
-
-let btn = document.getElementById("btn");
-btn.addEventListener("click", (event) => {
-  document.querySelector("#test").setAceEditorValue("print('hello world bitches')")
-   console.log(document.querySelector("#test").dispose())
+ 
+document.addEventListener("DOMContentLoaded", (event) => {
+  
 });
